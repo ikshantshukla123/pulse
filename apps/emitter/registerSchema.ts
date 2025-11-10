@@ -5,28 +5,21 @@ const { privateKeyToAccount } = require("viem/accounts");
 
 const dreamChain = defineChain({
   id: 50312,
-  name: "Somnia Testnet",
-  network: "somnia-testnet",
+  name: "Somnia Dream",
+  network: "somnia-dream",
   nativeCurrency: {
     decimals: 18,
     name: "STT",
     symbol: "STT",
   },
   rpcUrls: {
-    default: { http: ["https://rpc.somnia-dev.net"] },
+    default: { http: ["https://dream-rpc.somnia.network"] },
+    public: { http: ["https://dream-rpc.somnia.network"] },
   },
 });
 
-// ✅ Our Schema
-const activitySchema = `
-  address user,
-  string activityType,
-  string activityContext,
-  uint256 activityValue,
-  uint256 realm,
-  uint256 timestamp,
-  bytes32 sourceId
-`;
+// ✅ FIXED: Single-line schema without extra whitespace
+const activitySchema = "address user,string activityType,string activityContext,uint256 activityValue,uint256 realm,uint256 timestamp,bytes32 sourceId";
 
 async function main() {
   const publicClient = createPublicClient({
@@ -50,6 +43,7 @@ async function main() {
   const isRegistered = await sdk.streams.isDataSchemaRegistered(schemaId);
   if (isRegistered) {
     console.log("✅ Schema already registered!");
+    console.log("📋 Schema ID for your .env:", schemaId);
     return;
   }
 
@@ -58,11 +52,15 @@ async function main() {
     { id: "somnia-pulse-activity", schema: activitySchema }
   ]);
 
-  console.log("⏳ Waiting for confirmation...");
-  await publicClient.waitForTransactionReceipt({ hash: tx });
-
-  console.log(`🎉 Schema Registered Successfully!`);
-  console.log(`👉 Use this SCHEMA_ID in your .env: ${schemaId}`);
+  console.log("⏳ Waiting for confirmation... TX:", tx);
+  const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
+  
+  if (receipt.status === "success") {
+    console.log(`🎉 Schema Registered Successfully!`);
+    console.log(`👉 Use this SCHEMA_ID in your .env: ${schemaId}`);
+  } else {
+    console.log("❌ Transaction failed");
+  }
 }
 
 main().catch(console.error);
