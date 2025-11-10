@@ -1,0 +1,23 @@
+{
+  "name": "somnia-pulse",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@somnia-chain/streams": "^0.9.5",
+    "dotenv": "^17.2.3",
+    "viem": "^2.38.6"
+  }
+}
