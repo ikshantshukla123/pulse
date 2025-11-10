@@ -24,3 +24,73 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+/* apps/web/app/globals.css */
+.cyber-tokyo-panel {
+  background: linear-gradient(145deg, #0a0a14 0%, #1a1a2e 100%);
+  border: 1px solid;
+  border-image: linear-gradient(45deg, #ff00ff, #00ffff, #8a2be2) 1;
+  box-shadow: 
+    0 0 20px rgba(255, 0, 255, 0.3),
+    inset 0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+.cyber-button-teal {
+  background: linear-gradient(45deg, #00ffff22, #00ffff44);
+  border: 1px solid #00ffff;
+  color: #00ffff;
+  transition: all 0.3s ease;
+}
+
+.cyber-button-teal:hover {
+  box-shadow: 0 0 15px #00ffff;
+  background: linear-gradient(45deg, #00ffff44, #00ffff66);
+  transform: translateY(-2px);
+}
+
+.cyber-button-pink {
+  background: linear-gradient(45deg, #ff00ff22, #ff00ff44);
+  border: 1px solid #ff00ff;
+  color: #ff00ff;
+  transition: all 0.3s ease;
+}
+
+.cyber-button-pink:hover {
+  box-shadow: 0 0 15px #ff00ff;
+  background: linear-gradient(45deg, #ff00ff44, #ff00ff66);
+  transform: translateY(-2px);
+}
+
+.cyber-button-purple {
+  background: linear-gradient(45deg, #8a2be222, #8a2be244);
+  border: 1px solid #8a2be2;
+  color: #8a2be2;
+  transition: all 0.3s ease;
+}
+
+.cyber-button-purple:hover {
+  box-shadow: 0 0 15px #8a2be2;
+  background: linear-gradient(45deg, #8a2be244, #8a2be266);
+  transform: translateY(-2px);
+}
+
+.glitch-text {
+  text-shadow: 
+    2px 2px 0px #ff00ff,
+    -2px -2px 0px #00ffff;
+  animation: glitch 3s infinite;
+}
+
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.text-neon-pink { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+.text-neon-teal { color: #00ffff; text-shadow: 0 0 10px #00ffff; }
+.text-neon-purple { color: #8a2be2; text-shadow: 0 0 10px #8a2be2; }

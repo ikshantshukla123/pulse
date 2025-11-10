@@ -1,3 +1,4 @@
+// apps/emitter/publish.ts
 require("dotenv").config();
 const { SDK, SchemaEncoder } = require("@somnia-chain/streams");
 const { createPublicClient, createWalletClient, http, defineChain } = require("viem");
@@ -12,8 +13,8 @@ const dreamChain = defineChain({
   rpcUrls: { default: { http: ["https://dream-rpc.somnia.network"] } },
 });
 
-// ✅ Use the same single-line schema
-const SCHEMA = "address user,string activityType,string activityContext,uint256 activityValue,uint256 realm,uint256 timestamp,bytes32 sourceId";
+// ✅ MUST MATCH THE REGISTERED SCHEMA - ADD targetRealm
+const SCHEMA = "address user,string activityType,string activityContext,uint256 activityValue,uint256 realm,uint256 targetRealm,uint256 timestamp,bytes32 sourceId";
 
 async function publishActivity() {
   const publicClient = createPublicClient({ chain: dreamChain, transport: http() });
@@ -29,6 +30,7 @@ async function publishActivity() {
     activityContext: "dashboard",
     activityValue: "1",
     realm: "1",
+    targetRealm: "0", // ← ADD THIS FIELD (0 = no target)
     timestamp: Math.floor(Date.now() / 1000).toString(),
     sourceId: "pulse-ui-" + Date.now()
   };
@@ -39,6 +41,7 @@ async function publishActivity() {
     { name: "activityContext", value: activity.activityContext, type: "string" },
     { name: "activityValue", value: activity.activityValue, type: "uint256" },
     { name: "realm", value: activity.realm, type: "uint256" },
+    { name: "targetRealm", value: activity.targetRealm, type: "uint256" }, // ← ADD THIS FIELD
     { name: "timestamp", value: activity.timestamp, type: "uint256" },
     { name: "sourceId", value: stringToHex(activity.sourceId, { size: 32 }), type: "bytes32" },
   ]);
@@ -46,7 +49,7 @@ async function publishActivity() {
   const tx = await sdk.streams.set([
     {
       id: stringToHex(activity.sourceId, { size: 32 }),
-      schemaId: process.env.SCHEMA_ID, // This will be the NEW schema ID after fix
+      schemaId: process.env.SCHEMA_ID, // Make sure this is the NEW schema ID
       data: encoded
     }
   ]);

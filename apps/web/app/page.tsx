@@ -1,168 +1,128 @@
+// apps/web/app/page.tsx
 "use client";
 
-import RealmHeatmap from "@/components/RealmHeatmap";
+import CyberWarMap from "@/components/CyberWarMap";
 import ActivityFeed from "@/components/ActivityFeed";
 import Leaderboard from "@/components/LeaderBoard";
+import WarControls from "@/components/WarControls";
+import WarHUD from "@/components/WarHud";
 import { useLiveActivity } from "@/hooks/useLiveActivity";
-import { useEffect, useState } from "react"; // Add these imports
+import { useBotSimulator } from "@/hooks/useBotSimulater";
+import { useEffect, useState } from "react";
 
 export default function Page() {
   const { items, byRealm, tpm } = useLiveActivity();
-  const [isClient, setIsClient] = useState(false); // Add this state
+  const [isClient, setIsClient] = useState(false);
+
+  // Activate bot simulator for demo
+  useBotSimulator(true);
 
   useEffect(() => {
-    setIsClient(true); // Set to true when component mounts on client
+    setIsClient(true);
   }, []);
-
 
   const totalActivities = items.length;
   const uniqueUsers = new Set(items.map(item => item.user)).size;
-  const totalValue = items.reduce((sum, item) => sum + item.activityValue, 0n);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/30 to-slate-900 text-white overflow-hidden">
-      {/* Enhanced Animated Background */}
+    <main className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-purple-900/20 to-[#1a1a2e] text-white overflow-hidden">
+      {/* Cyber Tokyo Background */}
       <div className="absolute inset-0">
-      <div className="absolute inset-0">
-  {isClient && [...Array(20)].map((_, i) => (
-    <div
-      key={i}
-      className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
-      style={{
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
-        animationDelay: `${Math.random() * 3}s`,
-        animationDuration: `${2 + Math.random() * 2}s`
-      }}
-    />
-  ))}
-</div>
-        {/* Animated stars */}
-        <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${2 + Math.random() * 2}s`
-              }}
-            />
-          ))}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/10 via-[#0a0a14] to-[#1a1a2e]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,_rgba(255,0,255,0.1)_0%,_transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,_rgba(0,255,255,0.08)_0%,_transparent_50%)]"></div>
+        
+        {/* Animated grid */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="w-full h-full bg-[linear-gradient(90deg,_transparent_99%,_#00ffff_100%)] bg-[length:20px_20px]"></div>
         </div>
       </div>
       
       <div className="relative max-w-7xl mx-auto px-6 py-8 space-y-8 z-10">
 
-        {/* ENHANCED HEADER */}
+        {/* CYBER TOKYO HEADER */}
         <header className="flex items-center justify-between py-8">
           <div className="flex items-center space-x-4">
             <div className="relative">
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 via-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-purple-500/30 animate-float-slow">
-                <span className="text-2xl">🌙</span>
+              <div className="w-16 h-16 bg-gradient-to-br from-pink-500 via-purple-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-pink-500/30 animate-pulse">
+                <span className="text-3xl">⚔️</span>
               </div>
               <div className="absolute -top-1 -right-1">
-                <div className="w-4 h-4 bg-green-400 rounded-full border-2 border-slate-900 shadow-lg animate-ping"></div>
-                <div className="absolute inset-0 w-4 h-4 bg-green-400 rounded-full border-2 border-slate-900"></div>
+                <div className="w-5 h-5 bg-green-400 rounded-full border-2 border-[#0a0a14] shadow-lg animate-ping"></div>
+                <div className="absolute inset-0 w-5 h-5 bg-green-400 rounded-full border-2 border-[#0a0a14]"></div>
               </div>
             </div>
             <div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent animate-gradient">
-                Somnia Pulse
+              <h1 className="text-6xl font-bold glitch-text">
+                SOMNIA REALM WARS
               </h1>
-              <p className="text-slate-400 text-sm mt-2 flex items-center">
-                <span className="w-2 h-2 bg-cyan-400 rounded-full mr-2 animate-pulse"></span>
-                Real-time cosmic activity dashboard
+              <p className="text-cyan-300 text-lg mt-2 flex items-center font-mono">
+                <span className="w-3 h-3 bg-cyan-400 rounded-full mr-3 animate-pulse"></span>
+                REAL-TIME ON-CHAIN TERRITORY CONTROL
               </p>
             </div>
           </div>
           
-          {/* Enhanced Stats Cards */}
+          {/* Enhanced Stats */}
           <div className="flex items-center space-x-4">
-            <div className="text-center bg-slate-800/60 backdrop-blur-xl rounded-2xl px-6 py-4 border border-slate-700/50 shadow-2xl hover:border-slate-600/60 transition-all duration-300 group">
-              <div className="text-slate-400 text-sm font-medium mb-1">Pulses/Min</div>
-              <div className="text-3xl font-bold text-emerald-400 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-center cyber-tokyo-panel rounded-2xl px-6 py-4 group">
+              <div className="text-cyan-300 text-sm font-mono mb-1">POWER/MIN</div>
+              <div className="text-3xl font-bold text-pink-400 font-mono group-hover:scale-110 transition-transform duration-300">
                 {tpm}
               </div>
-              <div className="text-xs text-slate-500 mt-1">live rhythm</div>
             </div>
             
-            <div className="text-center bg-slate-800/60 backdrop-blur-xl rounded-2xl px-6 py-4 border border-slate-700/50 shadow-2xl hover:border-slate-600/60 transition-all duration-300 group">
-              <div className="text-slate-400 text-sm font-medium mb-1">Activities</div>
-              <div className="text-3xl font-bold text-white group-hover:scale-110 transition-transform duration-300">
+            <div className="text-center cyber-tokyo-panel rounded-2xl px-6 py-4 group">
+              <div className="text-cyan-300 text-sm font-mono mb-1">ACTIVITIES</div>
+              <div className="text-3xl font-bold text-white font-mono group-hover:scale-110 transition-transform duration-300">
                 {totalActivities}
               </div>
-              <div className="text-xs text-slate-500 mt-1">total tracked</div>
-            </div>
-
-            <div className="text-center bg-slate-800/60 backdrop-blur-xl rounded-2xl px-6 py-4 border border-slate-700/50 shadow-2xl hover:border-slate-600/60 transition-all duration-300 group">
-              <div className="text-slate-400 text-sm font-medium mb-1">Explorers</div>
-              <div className="text-3xl font-bold text-cyan-400 group-hover:scale-110 transition-transform duration-300">
-                {uniqueUsers}
-              </div>
-              <div className="text-xs text-slate-500 mt-1">unique users</div>
             </div>
           </div>
         </header>
 
-        {/* ENHANCED GRID LAYOUT */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          {/* Heatmap - Left */}
-          <div className="xl:col-span-1">
-            <RealmHeatmap byRealm={byRealm} />
+        {/* WAR DASHBOARD GRID */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+          {/* War Map - Left */}
+          <div className="xl:col-span-7">
+            <CyberWarMap byRealm={byRealm} />
           </div>
           
-          {/* Leaderboard - Middle */}
+          {/* Controls & HUD - Right */}
+          <div className="xl:col-span-5 space-y-6">
+            <WarHUD tpm={tpm} items={items} />
+            <WarControls />
+          </div>
+        </div>
+
+        {/* Activity & Leaderboard Row */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           <div className="xl:col-span-1">
             <Leaderboard items={items} />
           </div>
-          
-          {/* Activity Feed - Right */}
           <div className="xl:col-span-1">
             <ActivityFeed items={items} />
           </div>
         </div>
 
-        {/* Enhanced Footer */}
-        <footer className="text-center pt-8 border-t border-slate-800/50">
-          <div className="flex items-center justify-center space-x-6 text-sm text-slate-500">
+        {/* Cyber Footer */}
+        <footer className="text-center pt-8 border-t border-cyan-500/30">
+          <div className="flex items-center justify-center space-x-6 text-sm text-cyan-300 font-mono">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span>Live Network</span>
+              <span>LIVE NETWORK</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-              <span>{Object.keys(byRealm).length} Realms Active</span>
+              <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+              <span>{Object.keys(byRealm).length} REALMS ACTIVE</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-              <span>Total Value: {totalValue.toString()} pts</span>
+              <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+              <span>POWERED BY SOMNIA SDS</span>
             </div>
           </div>
         </footer>
       </div>
-
-      {/* Custom Animations */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-8px) rotate(180deg); }
-        }
-        @keyframes gradient {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-float-slow {
-          animation: float 8s ease-in-out infinite;
-        }
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 6s ease infinite;
-        }
-      `}</style>
     </main>
   );
 }

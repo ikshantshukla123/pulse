@@ -19,7 +19,13 @@ const dreamChain = defineChain({
 });
 
 // ✅ FIXED: Single-line schema without extra whitespace
-const activitySchema = "address user,string activityType,string activityContext,uint256 activityValue,uint256 realm,uint256 timestamp,bytes32 sourceId";
+const activitySchema = "address user,string activityType,string activityContext,uint256 activityValue,uint256 realm,uint256 targetRealm,uint256 timestamp,bytes32 sourceId";
+
+
+
+
+
+
 
 async function main() {
   const publicClient = createPublicClient({
@@ -49,7 +55,7 @@ async function main() {
 
   console.log("📡 Registering schema...");
   const tx = await sdk.streams.registerDataSchemas([
-    { id: "somnia-pulse-activity", schema: activitySchema }
+    { id: "somnia-realm-wars", schema: activitySchema }
   ]);
 
   console.log("⏳ Waiting for confirmation... TX:", tx);
