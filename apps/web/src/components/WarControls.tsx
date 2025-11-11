@@ -20,8 +20,7 @@ interface WarControlsProps {
   const [lastAction, setLastAction] = useState<{type: string, txHash?: string} | null>(null);
   
   const { account, walletClient, connectWallet, switchToSomniaNetwork, isCorrectNetwork } = useWallet();
-
-  const handleGameAction = async (type: 'ENTER_REALM' | 'QUEST_COMPLETE' | 'ATTACK_REALM', customTargetRealm?: number) => {
+const handleGameAction = async (type: 'ENTER_REALM' | 'QUEST_COMPLETE' | 'ATTACK_REALM', customTargetRealm?: number) => {
     if (!account || !walletClient) {
       alert('Please connect your wallet first!');
       return;
@@ -35,16 +34,34 @@ interface WarControlsProps {
         return;
       }
     }
-  if (type === 'ATTACK_REALM' && onAttackAnimation && onPowerUpdate) {
+
+    // ADD THIS SECTION FOR ANIMATIONS
+    if (type === 'ATTACK_REALM') {
       const actualTargetRealm = customTargetRealm || targetRealm;
-      onAttackAnimation(selectedRealm, actualTargetRealm);
-      onPowerUpdate(selectedRealm, 75);  // Attacker gains
-      onPowerUpdate(actualTargetRealm, -50); // Defender loses
+      
+      // Trigger attack animation
+      window.dispatchEvent(new CustomEvent('realmAttack', {
+        detail: { from: selectedRealm, to: actualTargetRealm }
+      }));
+
+      if (onAttackAnimation && onPowerUpdate) {
+        onAttackAnimation(selectedRealm, actualTargetRealm);
+        onPowerUpdate(selectedRealm, 75);  // Attacker gains
+        onPowerUpdate(actualTargetRealm, -50); // Defender loses
+      }
     } 
     else if (type === 'ENTER_REALM' && onPowerUpdate) {
+      // Add pulse effect for entering realm
+      window.dispatchEvent(new CustomEvent('realmPulse', {
+        detail: { realm: selectedRealm }
+      }));
       onPowerUpdate(selectedRealm, 25); // Entering realm gives power
     }
     else if (type === 'QUEST_COMPLETE' && onPowerUpdate) {
+      // Add pulse effect for quest completion
+      window.dispatchEvent(new CustomEvent('realmPulse', {
+        detail: { realm: selectedRealm }
+      }));
       onPowerUpdate(selectedRealm, 50); // Quest gives power
     }
 
@@ -68,8 +85,6 @@ interface WarControlsProps {
       setIsLoading(null);
     }
   };
-
-
 
 
   const getActionCost = (type: string) => {

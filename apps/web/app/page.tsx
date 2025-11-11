@@ -11,7 +11,7 @@ import { useBotSimulator } from "@/hooks/useBotSimulater";
 import { useEffect, useState } from "react";
 
 export default function Page() {
-  const { items, byRealm, tpm } = useLiveActivity();
+  const { items, byRealm, tpm ,error} = useLiveActivity();
   const [isClient, setIsClient] = useState(false);
   const [realmPower, setRealmPower] = useState<Record<number, number>>({
     1: 100, 2: 100, 3: 100, 4: 100, 5: 100, 6: 100, 7: 100, 8: 100

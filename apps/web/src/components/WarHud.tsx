@@ -1,92 +1,89 @@
-// apps/web/src/components/WarHUD.tsx
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { Activity } from "@/hooks/useLiveActivity";
 
-interface WarStats {
+interface WarHUDProps {
   tpm: number;
-  leadingRealm: number;
-  totalPlayers: number;
-  activeBattles: number;
+  items: Activity[];
 }
 
-export default function WarHUD({ tpm, items }: { tpm: number; items: any[] }) {
-  const [stats, setStats] = useState<WarStats>({
-    tpm,
-    leadingRealm: 1,
-    totalPlayers: 0,
-    activeBattles: 0
-  });
+export default function WarHUD({ tpm, items }: WarHUDProps) {
+  // Calculate live stats from items
+  const totalActivities = items.length;
+  const uniqueUsers = new Set(items.map(item => item.user)).size;
+  
+  // Calculate realm dominance (which realm has most activity)
+  const realmActivity = items.reduce((acc, item) => {
+    acc[item.realm] = (acc[item.realm] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>);
+  
+  const dominantRealm = Object.entries(realmActivity).sort((a, b) => b[1] - a[1])[0];
+  const dominantRealmNumber = dominantRealm ? parseInt(dominantRealm[0]) : 1;
+  const dominantRealmActivity = dominantRealm ? dominantRealm[1] : 0;
 
-  useEffect(() => {
-    const uniqueUsers = new Set(items.map(item => item.user)).size;
-    const realmPower = Object.entries(
-      items.reduce((acc: any, item) => {
-        const realm = Number(item.realm);
-        acc[realm] = (acc[realm] || 0) + 1;
-        return acc;
-      }, {})
-    );
-    
-    const leadingRealm = realmPower.length > 0 
-      ? realmPower.reduce((a, b) => a[1] > b[1] ? a : b)[0]
-      : 1;
-
-    setStats(prev => ({
-      ...prev,
-      tpm,
-      totalPlayers: uniqueUsers,
-      leadingRealm: Number(leadingRealm),
-      activeBattles: Math.floor(Math.random() * 5) + 1
-    }));
-  }, [tpm, items]);
+  // Calculate recent activity (last 5 minutes)
+  const fiveMinutesAgo = Math.floor(Date.now() / 1000) - 300;
+  const recentActivities = items.filter(item => item.timestamp >= fiveMinutesAgo).length;
 
   return (
-    <div className="cyber-tokyo-panel rounded-3xl border-2 border-pink-500/30 bg-black/40 backdrop-blur-sm p-6">
+    <div className="cyber-tokyo-panel rounded-3xl border-2 border-cyan-500/30 bg-black/40 backdrop-blur-sm p-6">
       <h3 className="text-xl font-bold glitch-text mb-4">📡 LIVE WAR INTEL</h3>
       
-      <div className="grid grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-cyan-300 font-mono text-sm">⚡ TPM</span>
-            <span className="text-pink-400 font-mono text-xl font-bold">{stats.tpm}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-cyan-300 font-mono text-sm">🔥 LEADING REALM</span>
-            <span className="text-cyan-400 font-mono text-xl font-bold">R{stats.leadingRealm}</span>
-          </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="text-center cyber-tokyo-panel rounded-xl p-4 border border-cyan-500/30">
+          <div className="text-2xl font-bold text-cyan-400 font-mono">{tpm}</div>
+          <div className="text-cyan-300 text-xs font-mono mt-1">ACTIONS/MIN</div>
         </div>
         
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-cyan-300 font-mono text-sm">👥 PLAYERS</span>
-            <span className="text-pink-400 font-mono text-xl font-bold">{stats.totalPlayers}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-cyan-300 font-mono text-sm">⚔️ BATTLES</span>
-            <span className="text-cyan-400 font-mono text-xl font-bold">{stats.activeBattles}</span>
-          </div>
+        <div className="text-center cyber-tokyo-panel rounded-xl p-4 border border-green-500/30">
+          <div className="text-2xl font-bold text-green-400 font-mono">{totalActivities}</div>
+          <div className="text-green-300 text-xs font-mono mt-1">TOTAL ACTIONS</div>
+        </div>
+        
+        <div className="text-center cyber-tokyo-panel rounded-xl p-4 border border-pink-500/30">
+          <div className="text-2xl font-bold text-pink-400 font-mono">{uniqueUsers}</div>
+          <div className="text-pink-300 text-xs font-mono mt-1">UNIQUE USERS</div>
+        </div>
+        
+        <div className="text-center cyber-tokyo-panel rounded-xl p-4 border border-purple-500/30">
+          <div className="text-2xl font-bold text-purple-400 font-mono">{recentActivities}</div>
+          <div className="text-purple-300 text-xs font-mono mt-1">LAST 5 MIN</div>
         </div>
       </div>
 
-      {/* Realm Power Rankings */}
-      <div className="mt-6">
-        <h4 className="text-pink-400 font-bold font-mono mb-3">🏆 REALM POWER RANKINGS</h4>
-        <div className="space-y-2">
-          {[1,2,3,4,5,6,7,8].slice(0, 4).map((realmId, index) => (
-            <div key={realmId} className="flex justify-between items-center p-3 bg-white/5 rounded-lg border border-cyan-500/20">
-              <span className="text-white font-mono">#{index + 1} R{realmId}</span>
-              <div className="flex items-center space-x-2">
-                <div className="w-16 bg-gray-700 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-pink-500 to-cyan-400 h-2 rounded-full"
-                    style={{ width: `${85 - index * 15}%` }}
-                  ></div>
-                </div>
-                <span className="text-cyan-300 text-sm font-mono">
-                  {Math.floor(85 - index * 15)}%
-                </span>
-              </div>
+      {/* Realm Dominance */}
+      <div className="cyber-tokyo-panel rounded-xl p-4 border border-yellow-500/30 mb-4">
+        <div className="flex items-center justify-between">
+          <div className="text-yellow-300 text-sm font-mono">🏆 DOMINANT REALM</div>
+          <div className="text-white font-bold text-lg">REALM {dominantRealmNumber}</div>
+        </div>
+        <div className="mt-2 w-full bg-slate-700/50 rounded-full h-2">
+          <div 
+            className="bg-yellow-400 h-2 rounded-full transition-all duration-500"
+            style={{ 
+              width: `${Math.min(100, (dominantRealmActivity / Math.max(1, totalActivities)) * 100)}%` 
+            }}
+          ></div>
+        </div>
+        <div className="text-slate-400 text-xs mt-1 text-right">
+          {dominantRealmActivity} actions ({Math.round((dominantRealmActivity / Math.max(1, totalActivities)) * 100)}%)
+        </div>
+      </div>
+
+      {/* Recent Activity Types */}
+      <div className="cyber-tokyo-panel rounded-xl p-4 border border-blue-500/30">
+        <div className="text-blue-300 text-sm font-mono mb-3">🎯 RECENT ACTIVITY TYPES</div>
+        <div className="grid grid-cols-3 gap-2 text-xs">
+          {Object.entries(
+            items.slice(0, 20).reduce((acc, item) => {
+              acc[item.activityType] = (acc[item.activityType] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>)
+          ).map(([type, count]) => (
+            <div key={type} className="flex justify-between items-center p-2 bg-slate-800/30 rounded">
+              <span className="text-slate-300 capitalize">{type.toLowerCase()}</span>
+              <span className="text-cyan-400 font-mono">{count}</span>
             </div>
           ))}
         </div>
