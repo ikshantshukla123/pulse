@@ -13,6 +13,9 @@ import { useEffect, useState } from "react";
 export default function Page() {
   const { items, byRealm, tpm } = useLiveActivity();
   const [isClient, setIsClient] = useState(false);
+  const [realmPower, setRealmPower] = useState<Record<number, number>>({
+    1: 100, 2: 100, 3: 100, 4: 100, 5: 100, 6: 100, 7: 100, 8: 100
+  });
 
   // Activate bot simulator for demo
   useBotSimulator(true);
@@ -20,12 +23,27 @@ export default function Page() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
+  
   const totalActivities = items.length;
   const uniqueUsers = new Set(items.map(item => item.user)).size;
 
+  const handleAttackAnimation = (fromRealm: number, toRealm: number) => {
+    setRealmPower(prev => ({
+      ...prev,
+      [fromRealm]: prev[fromRealm] + 75,
+      [toRealm]: Math.max(10, prev[toRealm] - 50)
+    }));
+  };
+
+  const updateRealmPower = (realm: number, powerChange: number) => {
+    setRealmPower(prev => ({
+      ...prev,
+      [realm]: Math.max(10, prev[realm] + powerChange)
+    }));
+  };
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-purple-900/20 to-[#1a1a2e] text-white overflow-hidden">
+    <main className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-purple-900/20 to-[#1a1a2e] text-white overflow-y-auto">
       {/* Cyber Tokyo Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/10 via-[#0a0a14] to-[#1a1a2e]"></div>
@@ -38,87 +56,101 @@ export default function Page() {
         </div>
       </div>
       
-      <div className="relative max-w-7xl mx-auto px-6 py-8 space-y-8 z-10">
-
-        {/* CYBER TOKYO HEADER */}
-        <header className="flex items-center justify-between py-8">
+      {/* Vertical Stack Layout */}
+      <div className="relative w-full px-6 py-4 space-y-6 z-10">
+        
+        {/* Header */}
+        <header className="flex items-center justify-between py-3">
           <div className="flex items-center space-x-4">
             <div className="relative">
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-500 via-purple-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-pink-500/30 animate-pulse">
-                <span className="text-3xl">⚔️</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-pink-500 via-purple-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-pink-500/30 animate-pulse">
+                <span className="text-xl">⚔️</span>
               </div>
               <div className="absolute -top-1 -right-1">
-                <div className="w-5 h-5 bg-green-400 rounded-full border-2 border-[#0a0a14] shadow-lg animate-ping"></div>
-                <div className="absolute inset-0 w-5 h-5 bg-green-400 rounded-full border-2 border-[#0a0a14]"></div>
+                <div className="w-3 h-3 bg-green-400 rounded-full border-2 border-[#0a0a14] shadow-lg animate-ping"></div>
+                <div className="absolute inset-0 w-3 h-3 bg-green-400 rounded-full border-2 border-[#0a0a14]"></div>
               </div>
             </div>
             <div>
-              <h1 className="text-6xl font-bold glitch-text">
+              <h1 className="text-3xl font-bold glitch-text">
                 SOMNIA REALM WARS
               </h1>
-              <p className="text-cyan-300 text-lg mt-2 flex items-center font-mono">
-                <span className="w-3 h-3 bg-cyan-400 rounded-full mr-3 animate-pulse"></span>
+              <p className="text-cyan-300 text-sm mt-1 flex items-center font-mono">
+                <span className="w-2 h-2 bg-cyan-400 rounded-full mr-2 animate-pulse"></span>
                 REAL-TIME ON-CHAIN TERRITORY CONTROL
               </p>
             </div>
           </div>
           
-          {/* Enhanced Stats */}
-          <div className="flex items-center space-x-4">
-            <div className="text-center cyber-tokyo-panel rounded-2xl px-6 py-4 group">
-              <div className="text-cyan-300 text-sm font-mono mb-1">POWER/MIN</div>
-              <div className="text-3xl font-bold text-pink-400 font-mono group-hover:scale-110 transition-transform duration-300">
-                {tpm}
-              </div>
+          {/* Stats */}
+          <div className="flex items-center space-x-3">
+            <div className="text-center cyber-tokyo-panel rounded-lg px-4 py-2 min-w-[100px]">
+              <div className="text-cyan-300 text-xs font-mono mb-1">POWER/MIN</div>
+              <div className="text-xl font-bold text-pink-400 font-mono">{tpm}</div>
             </div>
             
-            <div className="text-center cyber-tokyo-panel rounded-2xl px-6 py-4 group">
-              <div className="text-cyan-300 text-sm font-mono mb-1">ACTIVITIES</div>
-              <div className="text-3xl font-bold text-white font-mono group-hover:scale-110 transition-transform duration-300">
-                {totalActivities}
-              </div>
+            <div className="text-center cyber-tokyo-panel rounded-lg px-4 py-2 min-w-[100px]">
+              <div className="text-cyan-300 text-xs font-mono mb-1">ACTIVITIES</div>
+              <div className="text-xl font-bold text-white font-mono">{totalActivities}</div>
+            </div>
+            
+            <div className="text-center cyber-tokyo-panel rounded-lg px-4 py-2 min-w-[100px]">
+              <div className="text-cyan-300 text-xs font-mono mb-1">USERS</div>
+              <div className="text-xl font-bold text-cyan-400 font-mono">{uniqueUsers}</div>
             </div>
           </div>
         </header>
 
-        {/* WAR DASHBOARD GRID */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-          {/* War Map - Left */}
-          <div className="xl:col-span-7">
-            <CyberWarMap byRealm={byRealm} />
-          </div>
-          
-          {/* Controls & HUD - Right */}
-          <div className="xl:col-span-5 space-y-6">
+        {/* War Map - Full Width */}
+        <div className="w-full">
+          <CyberWarMap byRealm={byRealm} realmPower={realmPower} />
+        </div>
+
+        {/* War HUD & Controls - Side by Side */}
+        <div className="grid grid-cols-2 gap-6">
+          <div>
             <WarHUD tpm={tpm} items={items} />
-            <WarControls />
+          </div>
+          <div>
+            <WarControls 
+              onAttackAnimation={handleAttackAnimation}
+              onPowerUpdate={updateRealmPower}
+            />
           </div>
         </div>
 
-        {/* Activity & Leaderboard Row */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          <div className="xl:col-span-1">
+        {/* Leaderboard & Activity Feed - Side by Side */}
+        <div className="grid grid-cols-2 gap-6">
+          <div>
             <Leaderboard items={items} />
           </div>
-          <div className="xl:col-span-1">
+          <div>
             <ActivityFeed items={items} />
           </div>
         </div>
 
-        {/* Cyber Footer */}
-        <footer className="text-center pt-8 border-t border-cyan-500/30">
-          <div className="flex items-center justify-center space-x-6 text-sm text-cyan-300 font-mono">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span>LIVE NETWORK</span>
+        {/* Footer */}
+        <footer className="pt-6 border-t border-cyan-500/30">
+          <div className="flex items-center justify-between text-xs text-cyan-300 font-mono">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span>LIVE NETWORK</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                <span>{Object.keys(byRealm).length} REALMS ACTIVE</span>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
-              <span>{Object.keys(byRealm).length} REALMS ACTIVE</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
-              <span>POWERED BY SOMNIA SDS</span>
+            
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                <span>POWERED BY SOMNIA SDS</span>
+              </div>
+              <div className="text-slate-400">
+                {new Date().toLocaleTimeString()}
+              </div>
             </div>
           </div>
         </footer>

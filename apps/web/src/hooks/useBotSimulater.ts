@@ -1,23 +1,28 @@
-// apps/web/src/hooks/useBotSimulator.ts
+// apps/web/src/hooks/useBotSimulator.ts - FIXED
 'use client';
 import { useEffect } from 'react';
-import { publishGameAction } from '@/lib/gameActions';
+import { useWallet } from '@/contexts/WalletContext';
 
 const REALMS = [1, 2, 3, 4, 5, 6, 7, 8];
 const PLAYERS = ['0x891f...9ab', '0x3c2a...7de', '0x9f12...4bc', '0x6e45...1fa'];
 
 export const useBotSimulator = (isActive = true) => {
+  const { account } = useWallet();
+
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive || account) return; // Don't run bots if user is connected
+
+    // Simulate game actions in UI only (no real publishing)
+    const simulateBotAction = (type: string, realm: number, targetRealm?: number) => {
+      console.log(`🤖 Bot ${type}: Realm ${realm}${targetRealm ? ` → ${targetRealm}` : ''}`);
+      
+      // You could add visual effects here without real publishing
+      // For example: trigger attack animations, update fake scores, etc.
+    };
 
     const intervals = [
       setInterval(() => {
-        publishGameAction({
-          type: 'ENTER_REALM',
-          realm: REALMS[Math.floor(Math.random() * REALMS.length)],
-          timestamp: Date.now(),
-          playerId: PLAYERS[Math.floor(Math.random() * PLAYERS.length)]
-        });
+        simulateBotAction('ENTER_REALM', REALMS[Math.floor(Math.random() * REALMS.length)]);
       }, 3000),
 
       setInterval(() => {
@@ -25,26 +30,14 @@ export const useBotSimulator = (isActive = true) => {
         let toRealm = REALMS[Math.floor(Math.random() * REALMS.length)];
         while (toRealm === fromRealm) toRealm = REALMS[Math.floor(Math.random() * REALMS.length)];
         
-        publishGameAction({
-          type: 'ATTACK_REALM',
-          realm: fromRealm,
-          targetRealm: toRealm,
-          timestamp: Date.now(),
-          playerId: PLAYERS[Math.floor(Math.random() * PLAYERS.length)]
-        });
+        simulateBotAction('ATTACK_REALM', fromRealm, toRealm);
       }, 5000),
 
       setInterval(() => {
-        publishGameAction({
-          type: 'QUEST_COMPLETE',
-          realm: REALMS[Math.floor(Math.random() * REALMS.length)],
-          activityValue: Math.floor(Math.random() * 100) + 50,
-          timestamp: Date.now(),
-          playerId: PLAYERS[Math.floor(Math.random() * PLAYERS.length)]
-        });
+        simulateBotAction('QUEST_COMPLETE', REALMS[Math.floor(Math.random() * REALMS.length)]);
       }, 4000)
     ];
 
     return () => intervals.forEach(clearInterval);
-  }, [isActive]);
+  }, [isActive, account]); // Re-run when account changes
 };
