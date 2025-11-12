@@ -1,13 +1,11 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "apps/web/next.config.js",
-      "use": "@vercel/next"
-    }
-  ],
+  "framework": "nextjs",
+  "rootDirectory": "apps/web",
+  "buildCommand": "cd apps/web && npm install --legacy-peer-deps && npm run build",
+  "installCommand": "cd apps/web && npm install --legacy-peer-deps",
+  "outputDirectory": "apps/web/.next",
   "routes": [
     { "src": "/(.*)", "dest": "apps/web/$1" }
-  ],
-  "framework": "nextjs"
+  ]
 }
