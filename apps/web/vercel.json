@@ -1,7 +1,7 @@
 {
-  "version": 2,
-  "buildCommand": "pnpm run build",
-  "installCommand": "pnpm install",
-  "outputDirectory": ".next",
+  "buildCommand": "npm install --legacy-peer-deps && npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
+  "outputDirectory": "apps/web/.next",
+  "rootDir": "apps/web",
   "framework": "nextjs"
 }
