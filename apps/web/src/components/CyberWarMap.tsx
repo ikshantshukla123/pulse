@@ -24,6 +24,19 @@ export default function CyberWarMap({ byRealm, realmPower }: Props) {
   const [showPowerTracker, setShowPowerTracker] = useState(true);
   const [realmStates, setRealmStates] = useState<Record<number, {isUnderAttack: boolean, pulse: number}>>({});
 
+
+   useEffect(() => {
+    const handleReset = () => {
+      console.log('🔄 Resetting realm states for real player');
+      setRealmStates({}); // Clear all animations and states
+      setAttackAnimation(null); // Clear any ongoing attack animations
+    };
+
+    window.addEventListener('resetRealmStates' as any, handleReset as EventListener);
+    return () => window.removeEventListener('resetRealmStates' as any, handleReset as EventListener);
+  }, []);
+
+  
   // Calculate total power
   const totalPower = Object.values(realmPower).reduce((sum, power) => sum + power, 0);
 

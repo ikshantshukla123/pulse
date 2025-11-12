@@ -1,4 +1,4 @@
-// apps/web/src/components/WarControls.tsx - UPDATED WITH NETWORK CHECK
+// apps/web/src/components/WarControls.tsx - UPDATED WITH DISCONNECT
 'use client';
 
 import { useState } from 'react';
@@ -6,21 +6,25 @@ import { publishGameAction } from '@/lib/gameActions';
 import { useWallet } from '@/contexts/WalletContext';
 import WalletConnect from './WalletConnect';
 
-
 interface WarControlsProps {
   onAttackAnimation?: (fromRealm: number, toRealm: number) => void;
-  onPowerUpdate?: (realm: number, powerChange: number) => void; // ADD THIS
+  onPowerUpdate?: (realm: number, powerChange: number) => void;
 }
 
-
-  export default function WarControls({ onAttackAnimation, onPowerUpdate }: WarControlsProps) {
+export default function WarControls({ onAttackAnimation, onPowerUpdate }: WarControlsProps) {
   const [selectedRealm, setSelectedRealm] = useState(1);
   const [targetRealm, setTargetRealm] = useState(2);
   const [isLoading, setIsLoading] = useState<string | null>(null);
-  const [lastAction, setLastAction] = useState<{type: string, txHash?: string} | null>(null);
+  const [lastAction, setLastAction] = useState<{
+    type: string; 
+    txHash?: string;
+    message?: string;
+    status: 'SUCCESS' | 'REJECTED';
+  } | null>(null);
   
-  const { account, walletClient, connectWallet, switchToSomniaNetwork, isCorrectNetwork } = useWallet();
-const handleGameAction = async (type: 'ENTER_REALM' | 'QUEST_COMPLETE' | 'ATTACK_REALM', customTargetRealm?: number) => {
+  const { account, walletClient, connectWallet, disconnectWallet, switchToSomniaNetwork, isCorrectNetwork } = useWallet(); // ADDED disconnectWallet
+
+  const handleGameAction = async (type: 'ENTER_REALM' | 'QUEST_COMPLETE' | 'ATTACK_REALM', customTargetRealm?: number) => {
     if (!account || !walletClient) {
       alert('Please connect your wallet first!');
       return;
@@ -35,7 +39,7 @@ const handleGameAction = async (type: 'ENTER_REALM' | 'QUEST_COMPLETE' | 'ATTACK
       }
     }
 
-    // ADD THIS SECTION FOR ANIMATIONS
+    // Trigger animations immediately for better UX
     if (type === 'ATTACK_REALM') {
       const actualTargetRealm = customTargetRealm || targetRealm;
       
@@ -66,6 +70,8 @@ const handleGameAction = async (type: 'ENTER_REALM' | 'QUEST_COMPLETE' | 'ATTACK
     }
 
     setIsLoading(type);
+    setLastAction(null); // Clear previous actions
+    
     try {
       const result = await publishGameAction({
         type,
@@ -76,16 +82,28 @@ const handleGameAction = async (type: 'ENTER_REALM' | 'QUEST_COMPLETE' | 'ATTACK
         playerId: account
       }, walletClient);
 
-      setLastAction({ type, txHash: result.txHash });
+      setLastAction({ type, txHash: result.txHash, status: 'SUCCESS' });
       setTimeout(() => setLastAction(null), 5000);
     } catch (error: any) {
-      alert(`❌ Failed to publish ${type.toLowerCase()} action: ${error.message}`);
-      console.error(error);
+      // Handle different error types
+      if (error.message === 'USER_REJECTED') {
+        // User rejected transaction - show friendly message
+        setLastAction({ 
+          type: 'REJECTED', 
+          message: 'Transaction cancelled in wallet',
+          status: 'REJECTED'
+        });
+        setTimeout(() => setLastAction(null), 3000);
+        console.log('User rejected transaction - this is normal behavior');
+      } else {
+        // Actual error - show alert
+        alert(`❌ Failed to publish ${type.toLowerCase()} action: ${error.message}`);
+        console.error('Game action error:', error);
+      }
     } finally {
       setIsLoading(null);
     }
   };
-
 
   const getActionCost = (type: string) => {
     const costs = {
@@ -107,42 +125,69 @@ const handleGameAction = async (type: 'ENTER_REALM' | 'QUEST_COMPLETE' | 'ATTACK
         </div>
       )}
 
-      {/* Connected Wallet Info */}
+      {/* Connected Wallet Info with Disconnect Button */}
       {account && (
         <div className={`mb-4 p-3 rounded-lg border ${
           isCorrectNetwork 
             ? 'bg-green-500/20 border-green-500/30' 
             : 'bg-yellow-500/20 border-yellow-500/30'
         }`}>
-          <div className={`text-sm font-mono text-center ${
-            isCorrectNetwork ? 'text-green-300' : 'text-yellow-300'
-          }`}>
-            👤 {account.slice(0, 6)}...{account.slice(-4)} • {
-              isCorrectNetwork 
-                ? 'Ready for Battle!' 
-                : 'Wrong Network!'
-            }
-            {!isCorrectNetwork && (
+          <div className="flex items-center justify-between mb-2">
+            <div className={`text-sm font-mono ${
+              isCorrectNetwork ? 'text-green-300' : 'text-yellow-300'
+            }`}>
+              👤 {account.slice(0, 6)}...{account.slice(-4)} • {
+                isCorrectNetwork 
+                  ? 'Ready for Battle!' 
+                  : 'Wrong Network!'
+              }
+            </div>
+            <button 
+              onClick={disconnectWallet}
+              className="cyber-button-pink text-xs py-1 px-2"
+            >
+              🔓 Disconnect
+            </button>
+          </div>
+          {!isCorrectNetwork && (
+            <div className="flex justify-center mt-2">
               <button 
                 onClick={switchToSomniaNetwork}
-                className="ml-2 cyber-button-teal text-xs py-1 px-2"
+                className="cyber-button-teal text-xs py-1 px-2"
               >
                 Switch to Somnia
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Success Message */}
+      {/* Action Result Message */}
       {lastAction && (
-        <div className="mb-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
-          <div className="text-blue-300 text-sm font-mono text-center">
-            ✅ {lastAction.type} Successful!
-            {lastAction.txHash && (
-              <div className="text-xs opacity-75 mt-1">
-                TX: {lastAction.txHash.slice(0, 10)}...{lastAction.txHash.slice(-8)}
-              </div>
+        <div className={`mb-4 p-3 rounded-lg border ${
+          lastAction.status === 'REJECTED' 
+            ? 'bg-yellow-500/20 border-yellow-500/30' 
+            : 'bg-blue-500/20 border-blue-500/30'
+        }`}>
+          <div className={`text-sm font-mono text-center ${
+            lastAction.status === 'REJECTED' ? 'text-yellow-300' : 'text-blue-300'
+          }`}>
+            {lastAction.status === 'REJECTED' ? (
+              <>
+                ⏸️ {lastAction.message || 'Transaction Cancelled'}
+                <div className="text-xs opacity-75 mt-1">
+                  You can try again when ready
+                </div>
+              </>
+            ) : (
+              <>
+                ✅ {lastAction.type} Successful!
+                {lastAction.txHash && (
+                  <div className="text-xs opacity-75 mt-1">
+                    TX: {lastAction.txHash.slice(0, 10)}...{lastAction.txHash.slice(-8)}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -242,9 +287,9 @@ const handleGameAction = async (type: 'ENTER_REALM' | 'QUEST_COMPLETE' | 'ATTACK
           <div>• <strong>Enter Realm:</strong> Join a realm to start earning power</div>
           <div>• <strong>Attack:</strong> Steal power from other realms</div>
           <div>• <strong>Quest:</strong> Complete tasks to earn bonus power</div>
+          <div>• <strong>Note:</strong> You can cancel transactions in MetaMask anytime</div>
         </div>
       </div>
     </div>
   );
-
-  }
+}

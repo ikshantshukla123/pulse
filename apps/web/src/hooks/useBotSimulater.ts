@@ -1,43 +1,70 @@
-// apps/web/src/hooks/useBotSimulator.ts - FIXED
+// apps/web/src/hooks/useBotSimulator.ts - FIXED VERSION
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 
 const REALMS = [1, 2, 3, 4, 5, 6, 7, 8];
-const PLAYERS = ['0x891f...9ab', '0x3c2a...7de', '0x9f12...4bc', '0x6e45...1fa'];
 
-export const useBotSimulator = (isActive = true) => {
+export const useBotSimulator = (isActive = true, onPowerUpdate?: (realm: number, change: number) => void) => {
   const { account } = useWallet();
+  const intervalsRef = useRef<NodeJS.Timeout[]>([]);
 
   useEffect(() => {
-    if (!isActive || account) return; // Don't run bots if user is connected
+    // Clear any existing intervals first
+    intervalsRef.current.forEach(clearInterval);
+    intervalsRef.current = [];
 
-    // Simulate game actions in UI only (no real publishing)
+    if (!isActive || account) {
+      console.log('🤖 Bot simulator: Stopped - User connected or not active');
+      return;
+    }
+
+    console.log('🤖 Bot simulator: Started - No user connected');
+
     const simulateBotAction = (type: string, realm: number, targetRealm?: number) => {
       console.log(`🤖 Bot ${type}: Realm ${realm}${targetRealm ? ` → ${targetRealm}` : ''}`);
       
-      // You could add visual effects here without real publishing
-      // For example: trigger attack animations, update fake scores, etc.
+      // Trigger animations
+      if (type === 'ATTACK_REALM' && targetRealm) {
+        window.dispatchEvent(new CustomEvent('realmAttack', {
+          detail: { from: realm, to: targetRealm, isBot: true }
+        }));
+        
+        // Update power through callback
+        if (onPowerUpdate) {
+          onPowerUpdate(realm, 75);
+          onPowerUpdate(targetRealm, -50);
+        }
+      } else {
+        window.dispatchEvent(new CustomEvent('realmPulse', {
+          detail: { realm: realm, isBot: true }
+        }));
+        
+        const powerChange = type === 'QUEST_COMPLETE' ? 50 : 25;
+        if (onPowerUpdate) {
+          onPowerUpdate(realm, powerChange);
+        }
+      }
     };
 
+    // Create new intervals
     const intervals = [
-      setInterval(() => {
-        simulateBotAction('ENTER_REALM', REALMS[Math.floor(Math.random() * REALMS.length)]);
-      }, 3000),
-
+      setInterval(() => simulateBotAction('ENTER_REALM', REALMS[Math.floor(Math.random() * REALMS.length)]), 4000),
       setInterval(() => {
         const fromRealm = REALMS[Math.floor(Math.random() * REALMS.length)];
         let toRealm = REALMS[Math.floor(Math.random() * REALMS.length)];
         while (toRealm === fromRealm) toRealm = REALMS[Math.floor(Math.random() * REALMS.length)];
-        
         simulateBotAction('ATTACK_REALM', fromRealm, toRealm);
-      }, 5000),
-
-      setInterval(() => {
-        simulateBotAction('QUEST_COMPLETE', REALMS[Math.floor(Math.random() * REALMS.length)]);
-      }, 4000)
+      }, 6000),
+      setInterval(() => simulateBotAction('QUEST_COMPLETE', REALMS[Math.floor(Math.random() * REALMS.length)]), 5000)
     ];
 
-    return () => intervals.forEach(clearInterval);
-  }, [isActive, account]); // Re-run when account changes
+    intervalsRef.current = intervals;
+
+     return () => {
+      console.log('🤖 Bot simulator: Cleaning up');
+      intervalsRef.current.forEach(clearInterval);
+      intervalsRef.current = [];
+    };
+  }, [isActive, account, onPowerUpdate]);
 };

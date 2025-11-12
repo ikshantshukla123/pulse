@@ -1,4 +1,4 @@
-// apps/web/src/lib/gameActions.ts - FIXED
+// apps/web/src/lib/gameActions.ts - UPDATED WITH BETTER ERROR HANDLING
 'use client';
 
 import { SDK, SchemaEncoder } from "@somnia-chain/streams";
@@ -22,7 +22,6 @@ export const publishGameAction = async (action: GameAction, walletClient: any) =
   }
 
   try {
-    // Use the same RPC URL as your somniaClient
     const publicClient = createPublicClient({
       chain: dream,
       transport: http(process.env.NEXT_PUBLIC_SOMNIA_RPC || "https://dream-rpc.somnia.network"),
@@ -72,8 +71,17 @@ export const publishGameAction = async (action: GameAction, walletClient: any) =
     } else {
       throw new Error('Transaction failed on-chain');
     }
-  } catch (error) {
+ } catch (error: any) {
+  // Check for user rejection specifically
+  if (error?.name === 'ContractFunctionExecutionError' || 
+      error?.message?.includes('User rejected') ||
+      error?.message?.includes('denied transaction') ||
+      error?.code === 4001) {
+    // Don't log user rejection errors to console to reduce noise
+    throw new Error('USER_REJECTED');
+  } else {
+    // Only log actual errors
     console.error('Failed to publish game action:', error);
-    throw error;
-  }
-};
+    throw new Error(`Transaction failed: ${error.message || 'Unknown error'}`);
+  }     
+ }}

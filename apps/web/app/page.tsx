@@ -1,6 +1,6 @@
 // apps/web/app/page.tsx
 "use client";
-
+import { useWallet } from '@/contexts/WalletContext';
 import CyberWarMap from "@/components/CyberWarMap";
 import ActivityFeed from "@/components/ActivityFeed";
 import Leaderboard from "@/components/LeaderBoard";
@@ -11,22 +11,44 @@ import { useBotSimulator } from "@/hooks/useBotSimulater";
 import { useEffect, useState } from "react";
 
 export default function Page() {
-  const { items, byRealm, tpm ,error} = useLiveActivity();
+  const { items, byRealm, tpm ,error} = useLiveActivity(); 
+   const { account } = useWallet(); // ADD THIS
   const [isClient, setIsClient] = useState(false);
   const [realmPower, setRealmPower] = useState<Record<number, number>>({
     1: 100, 2: 100, 3: 100, 4: 100, 5: 100, 6: 100, 7: 100, 8: 100
   });
 
-  // Activate bot simulator for demo
-  useBotSimulator(true);
 
+ useEffect(() => {
+    if (account) {
+      console.log('🎮 User connected - resetting game state');
+      // Reset power to default
+      setRealmPower({
+        1: 100, 2: 100, 3: 100, 4: 100, 5: 100, 6: 100, 7: 100, 8: 100
+      });
+      // Send reset event to CyberWarMap
+      window.dispatchEvent(new CustomEvent('resetRealmStates'));
+    }
+  }, [account]);
+
+
+  // Activate bot simulator for demo - PASS THE UPDATE FUNCTION
+  const updateRealmPower = (realm: number, powerChange: number) => {
+    setRealmPower(prev => ({
+      ...prev,
+      [realm]: Math.max(10, prev[realm] + powerChange)
+    }));
+  };
+  
+  useBotSimulator(true, updateRealmPower);
+  
   useEffect(() => {
     setIsClient(true);
   }, []);
   
   const totalActivities = items.length;
   const uniqueUsers = new Set(items.map(item => item.user)).size;
-
+  
   const handleAttackAnimation = (fromRealm: number, toRealm: number) => {
     setRealmPower(prev => ({
       ...prev,
@@ -34,14 +56,8 @@ export default function Page() {
       [toRealm]: Math.max(10, prev[toRealm] - 50)
     }));
   };
-
-  const updateRealmPower = (realm: number, powerChange: number) => {
-    setRealmPower(prev => ({
-      ...prev,
-      [realm]: Math.max(10, prev[realm] + powerChange)
-    }));
-  };
-
+  
+  
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#0a0a14] via-purple-900/20 to-[#1a1a2e] text-white overflow-y-auto">
       {/* Cyber Tokyo Background */}
@@ -148,9 +164,10 @@ export default function Page() {
                 <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
                 <span>POWERED BY SOMNIA SDS</span>
               </div>
-              <div className="text-slate-400">
-                {new Date().toLocaleTimeString()}
-              </div>
+           
+<div className="text-slate-400">
+ 
+</div>
             </div>
           </div>
         </footer>

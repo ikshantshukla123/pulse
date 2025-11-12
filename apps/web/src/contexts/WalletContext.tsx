@@ -1,4 +1,4 @@
-// apps/web/src/contexts/WalletContext.tsx - UPDATED FOR TESTNET
+// apps/web/src/contexts/WalletContext.tsx - IMPROVED ERROR HANDLING
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -13,21 +13,22 @@ interface WalletContextType {
   isConnecting: boolean;
   switchToSomniaNetwork: () => Promise<boolean>;
   isCorrectNetwork: boolean;
+  connectionError: string | null;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
-// CORRECT Somnia Testnet (Shannon) Configuration
+// Somnia Testnet Configuration
 const SOMNIA_NETWORK = {
-  chainId: '0xc488', // 50312 in hex - CORRECT
-  chainName: 'Somnia Testnet', // ✅ Updated name
-  rpcUrls: ['https://dream-rpc.somnia.network'], // ✅ This is correct
+  chainId: '0xc488',
+  chainName: 'Somnia Testnet',
+  rpcUrls: ['https://dream-rpc.somnia.network'],
   nativeCurrency: {
     name: 'STT',
     symbol: 'STT',
     decimals: 18,
   },
-  blockExplorerUrls: ['https://shannon-explorer.somnia.network'], // ✅ Updated explorer
+  blockExplorerUrls: ['https://shannon-explorer.somnia.network'],
 };
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
@@ -35,15 +36,16 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [walletClient, setWalletClient] = useState<any>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   const switchToSomniaNetwork = async (): Promise<boolean> => {
     if (typeof window.ethereum === 'undefined') {
-      alert('MetaMask not detected. Please install MetaMask first.');
+      setConnectionError('MetaMask not detected. Please install MetaMask first.');
       return false;
     }
 
     try {
-      // First try to switch to existing network
+      setConnectionError(null);
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: SOMNIA_NETWORK.chainId }],
@@ -51,7 +53,6 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       setIsCorrectNetwork(true);
       return true;
     } catch (switchError: any) {
-      // This error code indicates that the chain has not been added to MetaMask
       if (switchError.code === 4902) {
         try {
           await window.ethereum.request({
@@ -59,7 +60,6 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
             params: [SOMNIA_NETWORK],
           });
           
-          // After adding, try switching again
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: SOMNIA_NETWORK.chainId }],
@@ -69,54 +69,54 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
           return true;
         } catch (addError) {
           console.error('Failed to add Somnia network:', addError);
-          alert('Failed to add Somnia Testnet to MetaMask. Please try manually.');
+          setConnectionError('Failed to add Somnia Testnet to MetaMask. Please try manually.');
           return false;
         }
       } else if (switchError.code === 4001) {
-        // User rejected the request
+        // User rejected the request - don't show error, just return false
         console.log('User rejected network switch');
         return false;
       } else {
         console.error('Failed to switch to Somnia network:', switchError);
-        alert('Failed to switch network. Please try again.');
+        setConnectionError('Failed to switch network. Please try again.');
         return false;
       }
     }
   };
 
-const checkNetwork = async (): Promise<boolean> => {
-  if (typeof window.ethereum === 'undefined') return false;
-  
-  try {
-    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-    console.log('Current chainId:', chainId, 'Expected: 0xc488');
+  const checkNetwork = async (): Promise<boolean> => {
+    if (typeof window.ethereum === 'undefined') return false;
     
-    // CORRECT: 50312 = 0xc488 (not 0xc498)
-    const isCorrect = chainId === '0xc488';
-    setIsCorrectNetwork(isCorrect);
-    
-    if (!isCorrect) {
-      console.log('Wrong network. Current:', chainId, 'Expected: 0xc488');
+    try {
+      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+      const isCorrect = chainId === '0xc488';
+      setIsCorrectNetwork(isCorrect);
+      return isCorrect;
+    } catch (error) {
+      console.error('Failed to check network:', error);
+      return false;
     }
-    
-    return isCorrect;
-  } catch (error) {
-    console.error('Failed to check network:', error);
-    return false;
-  }
-};
+  };
+
   const connectWallet = async () => {
     if (typeof window.ethereum === 'undefined') {
-      alert('Please install MetaMask to play!');
+      setConnectionError('Please install MetaMask to play!');
       return;
     }
 
     setIsConnecting(true);
+    setConnectionError(null);
+    
     try {
-      const [address] = await window.ethereum.request({
+      const accounts = await window.ethereum.request({
         method: 'eth_requestAccounts'
       });
       
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No accounts found');
+      }
+      
+      const address = accounts[0];
       const client = createWalletClient({
         account: address,
         chain: dream,
@@ -132,10 +132,14 @@ const checkNetwork = async (): Promise<boolean> => {
       console.log('🎮 Wallet connected:', address);
     } catch (error: any) {
       console.error('Failed to connect wallet:', error);
+      
+      // Handle different error types
       if (error.code === 4001) {
-        alert('Please connect your wallet to continue.');
+        setConnectionError('Connection rejected. Please approve the connection in MetaMask.');
+      } else if (error.code === -32002) {
+        setConnectionError('Connection request already pending. Please check MetaMask.');
       } else {
-        alert('Failed to connect wallet. Please try again.');
+        setConnectionError('Failed to connect wallet. Please try again.');
       }
     } finally {
       setIsConnecting(false);
@@ -146,6 +150,7 @@ const checkNetwork = async (): Promise<boolean> => {
     setAccount('');
     setWalletClient(null);
     setIsCorrectNetwork(false);
+    setConnectionError(null);
   };
 
   // Listen for network changes
@@ -156,19 +161,14 @@ const checkNetwork = async (): Promise<boolean> => {
       console.log('Chain changed to:', chainId);
       const isCorrect = chainId === SOMNIA_NETWORK.chainId;
       setIsCorrectNetwork(isCorrect);
-      
-      if (account && !isCorrect) {
-        console.log('User switched to wrong network');
-      }
+      setConnectionError(null);
     };
 
     const handleAccountsChanged = (accounts: string[]) => {
       console.log('Accounts changed:', accounts);
       if (accounts.length === 0) {
-        // User disconnected wallet
         disconnectWallet();
       } else if (accounts[0] !== account) {
-        // User switched accounts
         setAccount(accounts[0]);
         const client = createWalletClient({
           account: accounts[0],
@@ -177,13 +177,13 @@ const checkNetwork = async (): Promise<boolean> => {
         });
         setWalletClient(client);
         checkNetwork();
+        setConnectionError(null);
       }
     };
 
     window.ethereum.on('chainChanged', handleChainChanged);
     window.ethereum.on('accountsChanged', handleAccountsChanged);
     
-    // Initial network check
     checkNetwork();
 
     return () => {
@@ -200,7 +200,8 @@ const checkNetwork = async (): Promise<boolean> => {
       disconnectWallet,
       isConnecting,
       switchToSomniaNetwork,
-      isCorrectNetwork
+      isCorrectNetwork,
+      connectionError
     }}>
       {children}
     </WalletContext.Provider>
