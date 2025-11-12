@@ -1,0 +1,8 @@
+apps/emitter/
+packages/
+node_modules/
+.npm
+.yarn
+*.log
+.env*
+!.env.local
