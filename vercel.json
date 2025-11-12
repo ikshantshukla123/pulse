@@ -1,11 +1,8 @@
 {
   "version": 2,
   "framework": "nextjs",
- 
-  "buildCommand": "cd apps/web && npm install --legacy-peer-deps && npm run build",
-  "installCommand": "cd apps/web && npm install --legacy-peer-deps",
-  "outputDirectory": "apps/web/.next",
-  "routes": [
-    { "src": "/(.*)", "dest": "apps/web/$1" }
-  ]
+  "rootDirectory": "apps/web",
+  "buildCommand": "npm install --legacy-peer-deps && npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
+  "outputDirectory": ".next"
 }
