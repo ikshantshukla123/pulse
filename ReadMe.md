@@ -1,93 +1,114 @@
-# ⚔️ Somnia Realm Wars - Real-Time On-Chain Territory Control
-
+⚔️ Somnia Realm Wars - Real-Time On-Chain Territory Control
 A groundbreaking Web3 strategy game built with Next.js, integrating real-time multiplayer battles, Somnia Data Streams (SDS), and dynamic territory control mechanics.
 
-This game delivers **true real-time multiplayer experiences** with instant territory updates, live leaderboards, and dynamic power systems — all powered by Somnia SDS's high-performance streaming architecture.
+This game delivers true real-time multiplayer experiences with instant territory updates, live leaderboards, and dynamic power systems — all powered by Somnia SDS's high-performance streaming architecture.
 
-## 🌟 Key Features
+🌟 Key Features
+⚡ Real-Time Multiplayer Battles
+Instant territory control updates across all players
 
-### ⚡ Real-Time Multiplayer Battles
-- **Instant territory control updates** across all players
-- **Live attack animations** with visual feedback
-- **Dynamic power systems** that update in real-time
-- **No polling, no delays** - pure push-based updates
+Live attack animations with visual feedback
 
-### 🛡️ On-Chain Gameplay Integrity
+Dynamic power systems that update in real-time
+
+No polling, no delays - pure push-based updates
+
+🛡️ On-Chain Gameplay Integrity
 All crucial game data is stored on-chain via Somnia SDS:
-- Player wallet addresses
-- Realm power levels
-- Attack histories
-- Leaderboard rankings
-- Activity streams
 
-### 🎮 Dynamic Territory Control
-- **8 unique realms** with strategic positions
-- **Power-based territory dominance**
-- **Real-time attack animations**
-- **Live activity feeds** showing all player actions
+Player wallet addresses
 
-### 📊 Live Data Streaming
+Realm power levels
+
+Attack histories
+
+Leaderboard rankings
+
+Activity streams
+
+🎮 Dynamic Territory Control
+8 unique realms with strategic positions
+
+Power-based territory dominance
+
+Real-time attack animations
+
+Live activity feeds showing all player actions
+
+📊 Live Data Streaming
 Somnia SDS enables:
-- **Sub-second data propagation**
-- **Live leaderboard updates**
-- **Real-time activity feeds**
-- **Instant visual feedback**
-- **Multiplayer synchronization**
 
-## 🏗️ Architecture Overview
+Sub-second data propagation
+
+Live leaderboard updates
+
+Real-time activity feeds
+
+Instant visual feedback
+
+Multiplayer synchronization
+
+🏗️ Architecture Overview
 Next.js Frontend (React + TypeScript)
 ↓ (Custom Events)
-Real-time UI Updates
+Real-time UI Updates  
 ↓ (Web3 Actions)
 Somnia Data Stream SDK
 ↓
 Somnia Dream Chain (On-chain storage)
+Frontend → Real-time visualizations and user interactions
 
-- **Frontend** → Real-time visualizations and user interactions
-- **Somnia SDS** → Instant data streaming and synchronization
-- **Blockchain** → Secure, transparent game state storage
+Somnia SDS → Instant data streaming and synchronization
 
-## 🛠️ Tech Stack
+Blockchain → Secure, transparent game state storage
 
-| Component | Technology |
-|-----------|------------|
-| Frontend Framework | Next.js 14 + TypeScript |
-| Web3 Integration | Viem + WalletConnect |
-| Real-time Data | Somnia Data Stream SDK |
-| Blockchain | Somnia Dream Chain (Testnet) |
-| Styling | Tailwind CSS + Custom Cyberpunk Theme |
-| Animations | Framer Motion + Canvas API |
+🛠️ Tech Stack
+Component	Technology
+Frontend Framework	Next.js 14 + TypeScript
+Web3 Integration	Viem + WalletConnect
+Real-time Data	Somnia Data Stream SDK
+Blockchain	Somnia Dream Chain (Testnet)
+Styling	Tailwind CSS + Custom Cyberpunk Theme
+Animations	Framer Motion + Canvas API
+🎮 Gameplay Mechanics
+Realm Control System
+Enter Realms → Establish presence and gain power
 
-## 🎮 Gameplay Mechanics
+Attack Other Realms → Steal power from opponents
 
-### Realm Control System
-- **Enter Realms** → Establish presence and gain power
-- **Attack Other Realms** → Steal power from opponents  
-- **Complete Quests** → Earn bonus power and rewards
-- **Strategic Positioning** → Control key territory connections
+Complete Quests → Earn bonus power and rewards
 
-### Power Dynamics
-- **Base Power**: 100 per realm
-- **Attack Gains**: +75 power for attacker
-- **Defense Losses**: -50 power for defender
-- **Quest Rewards**: +25-50 power bonuses
+Strategic Positioning → Control key territory connections
 
-### Multiplayer Features
-- **Live leaderboard** with real-time rankings
-- **Activity feed** showing all player actions
-- **Bot simulation** for active demo experience
-- **Wallet integration** for true Web3 gameplay
+Power Dynamics
+Base Power: 100 per realm
 
-## 🔗 Smart Contract Integration
+Attack Gains: +75 power for attacker
 
-### Game Actions Published via SDS:
-- `ENTER_REALM` - Player joins a territory
-- `ATTACK_REALM` - Player attacks another territory  
-- `QUEST_COMPLETE` - Player completes objectives
-- All actions are **signed and verified** on-chain
+Defense Losses: -50 power for defender
 
-### Data Schema:
-```solidity
+Quest Rewards: +25-50 power bonuses
+
+Multiplayer Features
+Live leaderboard with real-time rankings
+
+Activity feed showing all player actions
+
+Bot simulation for active demo experience
+
+Wallet integration for true Web3 gameplay
+
+🔗 Smart Contract Integration
+Game Actions Published via SDS:
+ENTER_REALM - Player joins a territory
+
+ATTACK_REALM - Player attacks another territory
+
+QUEST_COMPLETE - Player completes objectives
+
+All actions are signed and verified on-chain
+
+Data Schema:
 address user
 string activityType  
 string activityContext
@@ -97,8 +118,8 @@ uint256 targetRealm
 uint256 timestamp
 bytes32 sourceId
 
-## 🚀 Why Somnia SDS?
-### 🎯 Perfect Gaming Infrastructure
+🚀 Why Somnia SDS?
+🎯 Perfect Gaming Infrastructure
 Real-time capabilities essential for multiplayer games
 
 Database-level performance with blockchain security
@@ -172,7 +193,6 @@ Climb the leaderboard through strategic gameplay
 
 🎮 How to Play
 Connect & Prepare
-
 Connect MetaMask wallet
 
 Switch to Somnia Testnet
@@ -180,13 +200,11 @@ Switch to Somnia Testnet
 Ensure STT tokens for gas
 
 Establish Presence
-
 Enter a realm to start earning power
 
 Build your territory strength
 
 Strategic Warfare
-
 Attack other realms to steal power
 
 Complete quests for bonus rewards
@@ -194,7 +212,6 @@ Complete quests for bonus rewards
 Monitor the war map for opportunities
 
 Dominate the Leaderboard
-
 Accumulate power through strategic actions
 
 Climb the real-time rankings
@@ -202,3 +219,29 @@ Climb the real-time rankings
 Become the ultimate realm champion
 
 🔧 Development
+Project Structure
+somnia-realm-wars/
+├── components/
+│   ├── game/
+│   │   ├── WarMap.tsx
+│   │   ├── Leaderboard.tsx
+│   │   └── ActivityFeed.tsx
+│   └── ui/
+├── hooks/
+│   ├── useSomniaSDK.ts
+│   └── useGameState.ts
+├── utils/
+│   ├── gameLogic.ts
+│   └── sdsIntegration.ts
+└── pages/
+    ├── index.tsx
+    └── api/
+
+  Key Dependencies
+  {
+  "@somnia/sds-sdk": "^1.0.0",
+  "viem": "^2.0.0",
+  "wagmi": "^2.0.0",
+  "framer-motion": "^10.0.0",
+  "next": "14.0.0"
+}
