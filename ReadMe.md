@@ -97,8 +97,8 @@ uint256 targetRealm
 uint256 timestamp
 bytes32 sourceId
 
-🚀 Why Somnia SDS?
-🎯 Perfect Gaming Infrastructure
+## 🚀 Why Somnia SDS?
+### 🎯 Perfect Gaming Infrastructure
 Real-time capabilities essential for multiplayer games
 
 Database-level performance with blockchain security
