@@ -100,111 +100,137 @@ bytes32 sourceId
 ## 🚀 Why Somnia SDS?
 ### 🎯 Perfect Gaming Infrastructure
 
--**Real-time capabilities essential for multiplayer games
+- Real-time capabilities essential for multiplayer games
 
--**Database-level performance with blockchain security
+- Database-level performance with blockchain security
 
--**No central servers required for game state
+- No central servers required for game state
 
--**Horizontal scalability for thousands of concurrent players
+- Horizontal scalability for thousands of concurrent players
 
 ### 🔒 Anti-Cheat Protection
 
--**All actions signed and verified on-chain
+- All actions signed and verified on-chain
 
--**No client-side spoofing of power or rankings
+- No client-side spoofing of power or rankings
 
--**Transparent game history immutable on blockchain
+- Transparent game history immutable on blockchain
 
--**Server-validated writes through SDS
+- Server-validated writes through SDS
 
 ### ⚡ Performance Advantages
 
--**<100ms update latency for real-time feel
+- <100ms update latency for real-time feel
 
--**Push-based architecture eliminates polling
+- Push-based architecture eliminates polling
 
--**Efficient data streams optimized for gaming
+- Efficient data streams optimized for gaming
 
--**Cross-player synchronization out of the box
+- Cross-player synchronization out of the box
 
 ## 🎯 Demo Features
 ### 🗺️ Live War Map
 
--**Interactive canvas with realm visualization
+- Interactive canvas with realm visualization
 
--**Real-time attack animations with particle effects
+- Real-time attack animations with particle effects
 
--**Dynamic power indicators with color coding
+- Dynamic power indicators with color coding
 
--**Constellation connections between realms
+- Constellation connections between realms
 
-###🧠 War Intelligence Dashboard
+### 🧠 War Intelligence Dashboard
 
--**Live activity feed with transaction history
+- Live activity feed with transaction history
 
--**Real-time leaderboard with player rankings
+- Real-time leaderboard with player rankings
 
--**Power tracker with realm status monitoring
+- Power tracker with realm status monitoring
 
--**Network statistics showing blockchain activity
+- Network statistics showing blockchain activity
 
-###🤖 Bot Simulation
+### 🤖 Bot Simulation
 
--**AI opponents for dynamic demo experience
+- AI opponents for dynamic demo experience
 
--**Automatic realm interactions when no players online
+- Automatic realm interactions when no players online
 
--**Seamless transition to real multiplayer when users connect
+- Seamless transition to real multiplayer when users connect
 
-##🚀 Getting Started
-###🧩 Prerequisites
+## 🚀 Getting Started
+### 🧩 Prerequisites
 
--**MetaMask wallet installed
+- MetaMask wallet installed
 
--**Somnia Testnet (Shannon) configured
+- Somnia Testnet (Shannon) configured
 
--**STT testnet tokens for gas fees
+- STT testnet tokens for gas fees
 
-###⚙️ Quick Start
+### ⚙️ Quick Start
 
--**Connect your wallet to Somnia Testnet
+- Connect your wallet to Somnia Testnet
 
--**Select your realm and target for attacks
+- Select your realm and target for attacks
 
--**Execute game actions (Enter, Attack, Quest)
+- Execute game actions (Enter, Attack, Quest)
 
--**Watch real-time updates across all players
+- Watch real-time updates across all players
 
--**Climb the leaderboard through strategic gameplay
+- Climb the leaderboard through strategic gameplay
 
-##🎮 How to Play
-###🔌 Connect & Prepare
+## 🎮 How to Play
+### 🔌 Connect & Prepare
 
--**Connect MetaMask wallet
+- Connect MetaMask wallet
 
--**Switch to Somnia Testnet
+- Switch to Somnia Testnet
 
--**Ensure STT tokens for gas
+- Ensure STT tokens for gas
 
-###🏗️ Establish Presence
+### 🏗️ Establish Presence
 
--**Enter a realm to start earning power
+- Enter a realm to start earning power
 
--**Build your territory strength
+- Build your territory strength
 
-###⚔️ Strategic Warfare
+### ⚔️ Strategic Warfare
 
--**Attack other realms to steal power
+- Attack other realms to steal power
 
--**Complete quests for bonus rewards
+- Complete quests for bonus rewards
 
--**Monitor the war map for opportunities
+- Monitor the war map for opportunities
 
-###🏆 Dominate the Leaderboard
+### 🏆 Dominate the Leaderboard
 
--**Accumulate power through strategic actions
+- Accumulate power through strategic actions
 
--**Climb the real-time rankings
+- Climb the real-time rankings
 
--**Become the ultimate realm champion
+- Become the ultimate realm champion
+  
+## 🔧 Development
+### Local Development
+```bash
+cd apps/web
+pnpm install
+pnpm dev
+```
+## Environment Setup
+```env
+NEXT_PUBLIC_SCHEMA_ID=your_schema_id
+NEXT_PUBLIC_PUBLISHER=your_publisher_address
+NEXT_PUBLIC_SOMNIA_RPC=https://dream-rpc.somnia.network
+```
+## 🌐 Live Demo
+Experience the real-time territory warfare at: https://battle-silk.vercel.app/
+
+## 🏆 Hackathon Achievement
+This project demonstrates the transformative power of Somnia SDS for real-time Web3 gaming, proving that blockchain applications can deliver the instant, responsive experiences users expect from modern web applications.
+
+## ✨ Author
+Built with ❤️ using Next.js, TypeScript, and Somnia Data Streams.
+
+
+
+
