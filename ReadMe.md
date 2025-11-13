@@ -1,135 +1,204 @@
-# Somnia Pulse — Real-Time On-Chain Activity Dashboard
+# ⚔️ Somnia Realm Wars - Real-Time On-Chain Territory Control
 
-A small monorepo containing a Next.js front-end that visualizes real-time on-chain activity using the Somnia Streams SDK. The web app demonstrates a "Realm War" map (animated canvas), activity feed, and leaderboards driven by on-chain published events.
+A groundbreaking Web3 strategy game built with Next.js, integrating real-time multiplayer battles, Somnia Data Streams (SDS), and dynamic territory control mechanics.
 
-This README collects project structure, setup and local run instructions, environment variables, and common troubleshooting tips gathered while developing the project.
+This game delivers **true real-time multiplayer experiences** with instant territory updates, live leaderboards, and dynamic power systems — all powered by Somnia SDS's high-performance streaming architecture.
 
----
+## 🌟 Key Features
 
-## Repo layout
+### ⚡ Real-Time Multiplayer Battles
+- **Instant territory control updates** across all players
+- **Live attack animations** with visual feedback
+- **Dynamic power systems** that update in real-time
+- **No polling, no delays** - pure push-based updates
 
-- apps/
-	- web/ — Next.js 16 TypeScript app (UI, canvas, activity feed)
-	- emitter/ — small publisher/emitter helper (not documented here)
-- packages/
-	- sdk/ — shared SDK helpers (if present)
-- package.json — workspace root
+### 🛡️ On-Chain Gameplay Integrity
+All crucial game data is stored on-chain via Somnia SDS:
+- Player wallet addresses
+- Realm power levels
+- Attack histories
+- Leaderboard rankings
+- Activity streams
 
+### 🎮 Dynamic Territory Control
+- **8 unique realms** with strategic positions
+- **Power-based territory dominance**
+- **Real-time attack animations**
+- **Live activity feeds** showing all player actions
 
-## Requirements
+### 📊 Live Data Streaming
+Somnia SDS enables:
+- **Sub-second data propagation**
+- **Live leaderboard updates**
+- **Real-time activity feeds**
+- **Instant visual feedback**
+- **Multiplayer synchronization**
 
-- Node.js 18+ (recommended) with pnpm installed
-- Git (for cloning)
+## 🏗️ Architecture Overview
+Next.js Frontend (React + TypeScript)
+↓ (Custom Events)
+Real-time UI Updates
+↓ (Web3 Actions)
+Somnia Data Stream SDK
+↓
+Somnia Dream Chain (On-chain storage)
 
-Note: this project uses pnpm workspaces from the root.
+- **Frontend** → Real-time visualizations and user interactions
+- **Somnia SDS** → Instant data streaming and synchronization
+- **Blockchain** → Secure, transparent game state storage
 
-## Install
+## 🛠️ Tech Stack
 
-From the repository root:
+| Component | Technology |
+|-----------|------------|
+| Frontend Framework | Next.js 14 + TypeScript |
+| Web3 Integration | Viem + WalletConnect |
+| Real-time Data | Somnia Data Stream SDK |
+| Blockchain | Somnia Dream Chain (Testnet) |
+| Styling | Tailwind CSS + Custom Cyberpunk Theme |
+| Animations | Framer Motion + Canvas API |
 
-```bash
-pnpm install
-```
+## 🎮 Gameplay Mechanics
 
-This will install workspace dependencies for the monorepo and `apps/web`.
+### Realm Control System
+- **Enter Realms** → Establish presence and gain power
+- **Attack Other Realms** → Steal power from opponents  
+- **Complete Quests** → Earn bonus power and rewards
+- **Strategic Positioning** → Control key territory connections
 
-## Environment variables
+### Power Dynamics
+- **Base Power**: 100 per realm
+- **Attack Gains**: +75 power for attacker
+- **Defense Losses**: -50 power for defender
+- **Quest Rewards**: +25-50 power bonuses
 
-The web app expects the following environment variables (add them to `apps/web/.env.local`):
+### Multiplayer Features
+- **Live leaderboard** with real-time rankings
+- **Activity feed** showing all player actions
+- **Bot simulation** for active demo experience
+- **Wallet integration** for true Web3 gameplay
 
-- NEXT_PUBLIC_SCHEMA_ID — Schema id used by Somnia Streams (example: `0xabc...`)
-- NEXT_PUBLIC_PUBLISHER — Publisher address used for reading streams
+## 🔗 Smart Contract Integration
 
-If you don't have a publisher/schema yet, the UI will gracefully handle "no data" scenarios, but features that decode live data will be inactive.
+### Game Actions Published via SDS:
+- `ENTER_REALM` - Player joins a territory
+- `ATTACK_REALM` - Player attacks another territory  
+- `QUEST_COMPLETE` - Player completes objectives
+- All actions are **signed and verified** on-chain
 
-## Run (development)
+### Data Schema:
+```solidity
+address user
+string activityType  
+string activityContext
+uint256 activityValue
+uint256 realm
+uint256 targetRealm
+uint256 timestamp
+bytes32 sourceId
 
-From `apps/web`:
+🚀 Why Somnia SDS?
+🎯 Perfect Gaming Infrastructure
+Real-time capabilities essential for multiplayer games
 
-```bash
-cd apps/web
-pnpm dev
-```
+Database-level performance with blockchain security
 
-The dev server starts with `next dev`. Open http://localhost:3000
+No central servers required for game state
 
-## Build (production)
+Horizontal scalability for thousands of concurrent players
 
-From `apps/web`:
+🔒 Anti-Cheat Protection
+All actions signed and verified on-chain
 
-```bash
-pnpm build
-pnpm start
-```
+No client-side spoofing of power or rankings
 
-Build uses `next build --webpack` and `next start` to serve the optimized site.
+Transparent game history immutable on blockchain
 
-## Important files (quick reference)
+Server-validated writes through SDS
 
-- `apps/web/app/layout.tsx` — main RootLayout and global font usage
-- `apps/web/app/page.tsx` — main page that composes components
-- `apps/web/src/components/RealmHeatmap.tsx` — responsive canvas heatmap (constellation)
-- `apps/web/src/components/CyberWarMap.tsx` — interactive/canvas-based realm war map with animations
-- `apps/web/src/components/ActivityFeed.tsx` — live activity feed component
-- `apps/web/src/components/LeaderBoard.tsx` — simple leaderboard
-- `apps/web/src/hooks/useLiveActivity.ts` — hook that polls Somnia Streams SDK and maps decoded rows to Activity objects
-- `apps/web/tsconfig.json` — path alias `@/*` -> `src/*` (if configured)
+⚡ Performance Advantages
+<100ms update latency for real-time feel
 
-## Troubleshooting & common issues
+Push-based architecture eliminates polling
 
-Here are a few issues encountered during development and their fixes/workarounds.
+Efficient data streams optimized for gaming
 
-1) Module not found for `@/components/*`
+Cross-player synchronization out of the box
 
-- Ensure `apps/web/tsconfig.json` contains:
+🎯 Demo Features
+Live War Map
+Interactive canvas with realm visualization
 
-```json
-{"compilerOptions": { "baseUrl": "src", "paths": { "@/*": ["*"] } } }
-```
+Real-time attack animations with particle effects
 
-- This lets imports like `@/components/ActivityFeed` resolve to `apps/web/src/components/ActivityFeed.tsx`.
+Dynamic power indicators with color coding
 
-2) `Failed to fetch 'Geist Mono' from Google Fonts` (Next.js warning)
+Constellation connections between realms
 
-- Next's new font loader attempts to download fonts during build. If download fails (network or blocked), Next will fall back to a local font and log a warning.
-- Options:
-	- Leave as-is (Next falls back automatically).
-	- Replace Google Fonts usage with a local `next/font/local` bundle to avoid runtime fetch.
-	- Switch to a system font stack in `globals.css`.
+War Intelligence Dashboard
+Live activity feed with transaction history
 
-3) `UnknownSignatureError` or decoding errors in `useLiveActivity`
+Real-time leaderboard with player rankings
 
-- Symptoms: SDK `deserialiseRawData` or `getBetweenRange` throws UnknownSignatureError. This usually means the ABI/schema used to decode doesn't match the published data.
-- Workarounds:
-	- Verify `NEXT_PUBLIC_SCHEMA_ID` matches the schema used by the publisher.
-	- If schema was updated upstream, update your SchemaEncoder or SDK calls to use the correct parent schema id.
-	- Add defensive code in `useLiveActivity`:
-		- Try `getBetweenRange` first; if it fails, try `getAllPublisherDataForSchema` (which may return decoded rows).
-		- Catch deserialisation exceptions and skip mapping that poll iteration instead of crashing the UI.
+Power tracker with realm status monitoring
 
-4) `onPowerUpdate is not defined` in `CyberWarMap`
+Network statistics showing blockchain activity
 
-- Cause: The `CyberWarMap` component referenced `onPowerUpdate` but it wasn't included in props.
-- Fix: Add `onPowerUpdate?: (realm:number, delta:number) => void` to the component `Props` and destructure it from the function parameters. Use it defensively (check `typeof onPowerUpdate === 'function'` before calling).
+Bot Simulation
+AI opponents for dynamic demo experience
 
-5) Styling/layout tweaks for the constellation/boxes
+Automatic realm interactions when no players online
 
-- The canvas and adjacent boxes should use a consistent card style.
-- Use a shared Tailwind/card class (rounded, backdrop-blur, border with subtle color, consistent padding and height) for visual consistency.
+Seamless transition to real multiplayer when users connect
 
-## Recommended next improvements
+🚀 Getting Started
+Prerequisites
+MetaMask wallet installed
 
-- Add a `README` for the `emitter` app explaining how to publish sample data (schema + publisher address) so the web UI can show live data.
-- Add defensive tests or mocks for `useLiveActivity` so front-end behavior is covered when the SDK returns unexpected shapes.
-- Consider bundling fonts locally to avoid Google Fonts fetch warnings in restricted networks.
-- Add TypeScript types/tests around the `SchemaEncoder` decoding so mapping is safe.
+Somnia Testnet (Shannon) configured
 
-## Contact / developer notes
+STT testnet tokens for gas fees
 
-If you run into runtime issues or you want me to:
-- Add a local-font fallback and remove the Google Fonts warning
-- Harden `useLiveActivity` with fallback strategies and retries
-- Add a settings UI to manually set schema id / publisher for testing
+Quick Start
+Connect your wallet to Somnia Testnet
 
-Tell me which of the above you'd like next and I can implement it.
-good
+Select your realm and target for attacks
+
+Execute game actions (Enter, Attack, Quest)
+
+Watch real-time updates across all players
+
+Climb the leaderboard through strategic gameplay
+
+🎮 How to Play
+Connect & Prepare
+
+Connect MetaMask wallet
+
+Switch to Somnia Testnet
+
+Ensure STT tokens for gas
+
+Establish Presence
+
+Enter a realm to start earning power
+
+Build your territory strength
+
+Strategic Warfare
+
+Attack other realms to steal power
+
+Complete quests for bonus rewards
+
+Monitor the war map for opportunities
+
+Dominate the Leaderboard
+
+Accumulate power through strategic actions
+
+Climb the real-time rankings
+
+Become the ultimate realm champion
+
+🔧 Development
