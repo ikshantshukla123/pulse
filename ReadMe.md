@@ -225,12 +225,5 @@ NEXT_PUBLIC_SOMNIA_RPC=https://dream-rpc.somnia.network
 ## 🌐 Live Demo
 Experience the real-time territory warfare at: https://battle-silk.vercel.app/
 
-## 🏆 Hackathon Achievement
-This project demonstrates the transformative power of Somnia SDS for real-time Web3 gaming, proving that blockchain applications can deliver the instant, responsive experiences users expect from modern web applications.
-
 ## ✨ Author
 Built with ❤️ using Next.js, TypeScript, and Somnia Data Streams.
-
-
-
-
